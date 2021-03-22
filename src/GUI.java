@@ -24,11 +24,10 @@ public class GUI {
     private JLabel labelAddUnita = new JLabel("");
     private JButton buttonAddUnità = new JButton();
     private JLabel labelUnitaAzienda = new JLabel();
-    private JButton buttonAutoAssegna = new JButton();
+    private JButton buttonAutoAssign = new JButton();
 
     private JPanel panelText = new JPanel();
     private JTextArea areaUnities = new JTextArea();
-    private JLabel labelAlreadyAdded = new JLabel("");
 
     private JPanel panelCheck = new JPanel();
     private JLabel labelCheck = new JLabel("");
@@ -146,7 +145,10 @@ public class GUI {
     private void setPanelText(){
         panelText.setLayout(new GridLayout(1,1));
 
+        setButtonAutoAssign();
+
         panelText.add(areaUnities);
+        panelText.add(buttonAutoAssign);
     }
 
     private void setButtonAddUnità(){
@@ -168,34 +170,32 @@ public class GUI {
     }
 
     private void updatePanelText(){
-        //panelText.removeAll();
         areaUnities.setText("");
         for(Unità unita: controller.getUnitaAzienda())
             areaUnities.append(unita.getNome() + "\n");
         // se il numero di unità in azienda è uguale al numero di ruoli, possiamo fare un autoset dei ruoli
         if(controller.getUnitaAzienda().size() == controller.getRuoliAzienda().size())
         {
-            setButtonAutoAssign();
+            buttonAutoAssign.setActionCommand("AUTOASSIGN-ROLES");
         }
         frameFirst.setVisible(true);
     }
 
     private void setButtonAutoAssign(){
-        panelText.add(buttonAutoAssegna);
-        setLabelAlreadyAdded();
-        panelText.add(labelAlreadyAdded);
-        buttonAutoAssegna.setText("Auto Assegna Ruoli");
-        buttonAutoAssegna.setActionCommand("AUTOASSIGN-ROLES");
-        buttonAutoAssegna.addActionListener(new ActionListener() {
+        buttonAutoAssign.setText("Auto Assegna Ruoli");
+        buttonAutoAssign.setActionCommand("NOTHING");
+        buttonAutoAssign.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (e.getActionCommand().equals("AUTOASSIGN-ROLES")) {
                     controller.autoSetRuoli();
-                    buttonAutoAssegna.setActionCommand("NOTHING");
-                    setButtonAnalizza();
+                    buttonAutoAssign.setActionCommand("ALREADY-SET");
+                    areaConsole.append("ATTENZIONE: ruoli automatici impostati\n");
                 }
                 if(e.getActionCommand().equals("NOTHING"))
-                    labelAlreadyAdded.setText("Ruoli base già impostati");
+                    areaConsole.append("ERRORE: non puoi registrare ancora i ruoli\n");
+                if(e.getActionCommand().equals("ALREADY-SET"))
+                    areaConsole.append("ERRORE: ruoli automatici già impostati\n");
                 frameFirst.setVisible(true);
             }
         });
@@ -213,23 +213,32 @@ public class GUI {
         });
     }
 
-    private void setLabelAlreadyAdded(){
-        labelAlreadyAdded.setForeground(Color.RED);
-    }
-
     private void setPanelAnalista(){
         panelAnalista.setLayout(new FlowLayout(FlowLayout.LEFT));
 
         setButtonAddCompetenza();
+        setButtonAnalizza();
+
         panelAnalista.add(textFieldRuolo);
         panelAnalista.add(textFieldCompetenza);
         panelAnalista.add(buttonAddCompetenzaRuolo);
         panelAnalista.add(new JLabel("Analista"));
         panelAnalista.getComponent(0).setForeground(Color.BLACK);
+        panelAnalista.add(buttonAnalizza);
     }
 
     private void setButtonAnalizza(){
-        panelAnalista.add(buttonAnalizza);
+        buttonAnalizza.setActionCommand("NOTHING");
+        buttonAnalizza.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                boolean allRoleCovered = true;
+                if(e.getActionCommand().equals("ANALIZZA")) {
+                    controller.analizza(allRoleCovered);
+                    areaConsole.append("ATTENZIONE: ruoli analizzati\n");
+                }
+            }
+        });
     }
 
     private void setButtonAddCompetenza(){

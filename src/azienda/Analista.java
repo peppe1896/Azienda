@@ -5,7 +5,12 @@ import java.util.List;
 
 public class Analista {
     private Azienda azienda;
-
+    /**
+     * Fa il controllo dei Ruoli dell'Azienda: verifica che per ogni Unità assegnata a quel Ruolo
+     * ci siano le Competenze necessarie. Nel caso in cui non ci siano, analizzaRuoli crea i Corsi
+     * che forniscono le Competenze richieste e li rende disponibili dentro la collection di Corso
+     * di ogni singolo Ruolo, chiamando in forward il metodo creaCorso.
+     */
     public void analizzaRuoli(){
         List<Ruolo> ruoli = azienda.getRuoli();
         for(Ruolo r:ruoli){

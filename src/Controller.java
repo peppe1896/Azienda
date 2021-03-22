@@ -72,16 +72,26 @@ public class Controller {
         return false;
     }
 
-    public void analizza(){
+    /**
+    analizzaRuoli NON PREVEDE che ci siano delle Unità non assegnate. analizza fa un controllo e solo nel caso
+    in cui tutti i Ruoli siano ricoperti (questo non implica che le Unità assegnate debbano avere obbligatoriamente
+    le Competenze richieste per il Ruolo che ricopre.
+    Il parametro di ingresso result fornisce il risultato, cioè ci dice se ha tutti i ruoli sono ricoperti.
+    Inoltre questa funzione analizza restituisce una Lista di Ruoli senza l'unità assegnata.
+     */
+    public List<Ruolo> analizza(boolean result){
         boolean tuttiRuoliRicoperti = true;
-        for(Ruolo r:azienda.getRuoli())
-            if(r.getUnità() == null)
+        List<Ruolo> ruoliSenzaUnità = new ArrayList<>();
+        for(Ruolo r:azienda.getRuoli()) {
+            if (r.getUnità() == null) {
                 tuttiRuoliRicoperti = false;
+                ruoliSenzaUnità.add(r);
+            }
+        }
         if(tuttiRuoliRicoperti)
             analista.analizzaRuoli();
-        else
-            System.out.println("Alcuni ruoli non sono ricoperti!");
-        //TODO fai qualcosa in questa funzione per prenderti il messaggio
+        result = tuttiRuoliRicoperti;
+        return ruoliSenzaUnità;
     }
 
     public List<Unità> getUnitaAzienda(){
